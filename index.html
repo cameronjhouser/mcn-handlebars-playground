@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCN Handlebars Playground</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <span class="header-title">MCN Handlebars Playground</span>
+      <span class="header-sub">Marketing Cloud Next · Handlebars.Net</span>
+    </div>
+    <div class="header-right">
+      <label class="label" for="sampleSelect">Template:</label>
+      <select id="sampleSelect"></select>
+      <label class="label" for="dataFileSelect">Data file:</label>
+      <select id="dataFileSelect"></select>
+      <button id="reloadDataBtn" title="Re-read selected data file">↺ Reload</button>
+    </div>
+  </header>
+
+  <!-- Main editors + output -->
+  <div class="workspace">
+
+    <!-- Left: editors -->
+    <div class="panel panel-left">
+      <div class="pane pane-template">
+        <div class="pane-label">Template
+          <span class="pane-hint">Handlebars syntax · auto-renders on change</span>
+        </div>
+        <textarea id="templateEditor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+      <div class="pane-divider" id="hDivider"></div>
+      <div class="pane pane-data">
+        <div class="pane-label">Data (JSON)
+          <span class="pane-hint">Edit inline or load from <code>data/</code> folder</span>
+        </div>
+        <textarea id="dataEditor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+      </div>
+    </div>
+
+    <!-- Vertical splitter -->
+    <div class="panel-divider" id="vDivider"></div>
+
+    <!-- Right: output -->
+    <div class="panel panel-right">
+      <div class="pane pane-output">
+        <div class="pane-label">Output</div>
+        <iframe id="outputFrame" sandbox="allow-same-origin"></iframe>
+      </div>
+      <div class="pane-divider"></div>
+      <div class="pane pane-errors">
+        <div class="pane-label">Console
+          <button id="clearConsole" class="btn-tiny">Clear</button>
+        </div>
+        <div id="errorConsole"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom: Helper reference -->
+  <div class="ref-bar" id="refBar">
+    <div class="ref-tabs">
+      <button class="ref-tab active" data-cat="object">Object &amp; List</button>
+      <button class="ref-tab" data-cat="string">String</button>
+      <button class="ref-tab" data-cat="datetime">Date &amp; Time</button>
+      <button class="ref-tab" data-cat="comparison">Comparison</button>
+      <button class="ref-tab" data-cat="utility">Utility</button>
+      <button class="ref-tab" data-cat="math">Math</button>
+      <button class="ref-tab" data-cat="deviations">⚠ Deviations</button>
+      <button class="ref-tab ref-toggle" id="refToggle" title="Collapse reference panel">▼ Hide</button>
+    </div>
+    <div class="ref-content" id="refContent"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

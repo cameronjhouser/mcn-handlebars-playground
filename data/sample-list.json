@@ -1,0 +1,25 @@
+{
+  "firstName": "Alex",
+  "lastName": "Johnson",
+  "products": [
+    { "name": "Basic Widget",   "price": 9.99,  "category": "hardware", "inStock": true  },
+    { "name": "Pro Widget",     "price": 29.99, "category": "hardware", "inStock": true  },
+    { "name": "Premium Widget", "price": 49.99, "category": "hardware", "inStock": false },
+    { "name": "Starter Pack",   "price": 14.99, "category": "bundle",   "inStock": true  }
+  ],
+  "tagGroups": [
+    ["email", "sms"],
+    ["mobile", "web"],
+    ["analytics"]
+  ],
+  "config": {
+    "theme": "dark",
+    "locale": "en-US",
+    "maxItems": 10
+  },
+  "orderDate": "2024-09-29T14:30:00",
+  "price": 1234.567,
+  "emptyList": [],
+  "score": 85,
+  "nickname": null
+}

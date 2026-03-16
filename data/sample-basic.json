@@ -1,0 +1,20 @@
+{
+  "firstName": "Alex",
+  "lastName": "Johnson",
+  "email": "alex.johnson@example.com",
+  "isActive": true,
+  "isLoggedIn": true,
+  "score": 85,
+  "nickname": "",
+  "paddedText": "   hello world   ",
+  "emptyString": "",
+  "emptyList": [],
+  "orderDate": "2024-09-29T14:30:00",
+  "price": 1234.567,
+  "address": {
+    "street": "123 Main St",
+    "city": "Chicago",
+    "state": "IL",
+    "zip": "60601"
+  }
+}

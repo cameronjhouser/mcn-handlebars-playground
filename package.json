@@ -1,0 +1,16 @@
+{
+  "name": "mcn-handlebars-playground",
+  "version": "1.0.0",
+  "description": "Local dev environment for Marketing Cloud Next Handlebars",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.8"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}
