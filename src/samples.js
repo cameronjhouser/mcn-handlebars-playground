@@ -49,7 +49,7 @@ export const SAMPLES = [
 <p>Uppercase: {{uppercase firstName}}</p>
 <p>Lowercase: {{lowercase lastName}}</p>
 <p>Trimmed: "{{trim paddedText}}"</p>
-<p>ProperCase: {{properCase (lowercase "MARKETING CLOUD NEXT")}}</p>`,
+<p>ProperCase: {{propercase (lowercase "MARKETING CLOUD NEXT")}}</p>`,
     dataFile: 'sample-basic',
   },
   {
@@ -186,27 +186,27 @@ export const SAMPLES = [
 <p>not isActive: {{not isActive}}</p>
 <p>score < 0 OR score > 100: {{or (compare score "<" 0) (compare score ">" 100)}}</p>
 
-{{#compare score ">=" 80}}
+{{#if (compare score ">=" 80)}}
   <p>High score!</p>
 {{else}}
   <p>Keep practicing.</p>
-{{/compare}}`,
+{{/if}}`,
     dataFile: 'sample-basic',
   },
   {
-    name: 'isEmpty / isNull',
-    template: `<p>isEmpty(null): {{isEmpty missingField}}</p>
-<p>isEmpty(""): {{isEmpty emptyString}}</p>
-<p>isEmpty([]): {{isEmpty emptyList}}</p>
-<p>isEmpty(products): {{isEmpty products}}</p>
-<p>isNull(null): {{isNull missingField}}</p>
-<p>isNull(0): {{isNull score}}</p>
+    name: 'isempty / isnull',
+    template: `<p>isempty(null): {{isempty missingField}}</p>
+<p>isempty(""): {{isempty emptyString}}</p>
+<p>isempty([]): {{isempty emptyList}}</p>
+<p>isempty(products): {{isempty products}}</p>
+<p>isnull(null): {{isnull missingField}}</p>
+<p>isnull(0): {{isnull score}}</p>
 
-{{#isEmpty nickname}}
+{{#if (isempty nickname)}}
   <p>No nickname set — using firstName: {{firstName}}</p>
 {{else}}
   <p>Nickname: {{nickname}}</p>
-{{/isEmpty}}`,
+{{/if}}`,
     dataFile: 'sample-list',
   },
   {
@@ -215,7 +215,7 @@ export const SAMPLES = [
 <p>Date (MMMM d, yyyy): {{format orderDate "MMMM d, yyyy" "date"}}</p>
 <p>Number (N2): {{format price "N2" "numeric"}}</p>
 <p>Number (F4): {{format price "F4" "numeric"}}</p>
-<p>FormatCurrency: {{formatCurrency price "USD" "en-US"}}</p>
+<p>FormatCurrency: {{formatCurrency price "en-US"}}</p>
 <p>FormatNumber (N0): {{formatNumber price "N0" "en-US"}}</p>`,
     dataFile: 'sample-list',
   },
@@ -442,13 +442,13 @@ export const SAMPLES = [
 <p>not(active): {{not active}}</p>
 <p>not(hasOptedIn): {{not hasOptedIn}}</p>
 
-{{#and active verified}}
+{{#if (and active verified)}}
   <p>✅ Account is active and verified — full personalisation enabled.</p>
-{{/and}}
+{{/if}}
 
-{{#or (compare score ">" loyaltyThreshold) (compare tier "==" "Platinum")}}
+{{#if (or (compare score ">" loyaltyThreshold) (compare tier "==" "Platinum"))}}
   <p>🎁 Eligible for bonus reward.</p>
-{{/or}}
+{{/if}}
 
 <h3>iif — inline ternary (both branches always evaluated)</h3>
 <p>Status: {{iif active "Active" "Inactive"}}</p>
@@ -480,8 +480,8 @@ export const SAMPLES = [
 <p>Event date: {{format eventDate "MMM d, yyyy" "date"}}</p>
 
 <h3>formatCurrency</h3>
-<p>Spend: {{formatCurrency spend currency locale}}</p>
-<p>Conversion rate: {{formatCurrency conversionRate "USD" "en-US"}}</p>
+<p>Spend: {{formatCurrency spend locale}}</p>
+<p>Conversion rate: {{formatCurrency conversionRate "en-US"}}</p>
 
 <h3>formatNumber</h3>
 <p>Score (N0): {{formatNumber score "N0"}}</p>

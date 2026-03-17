@@ -233,10 +233,16 @@ export function registerMCNHelpers(Handlebars) {
     catch (_) { return s.toLowerCase(); }
   });
 
-  // properCase(subject)  ⚠️ Not in official docs (404), implemented from category description
-  Handlebars.registerHelper('properCase', function(subject) {
+  // propercase(subject, culture?)
+  Handlebars.registerHelper('propercase', function(subject, culture, options) {
     if (subject === null || subject === undefined) return '';
-    return toStr(subject).replace(/\b\w/g, c => c.toUpperCase());
+    const s = toStr(subject);
+    const cult = (culture && typeof culture !== 'object') ? String(culture).replace('_', '-') : undefined;
+    // Capitalize first letter of each word, respecting locale if provided
+    return s.replace(/\b\w/g, c => {
+      try { return cult ? c.toLocaleUpperCase(cult) : c.toUpperCase(); }
+      catch (_) { return c.toUpperCase(); }
+    });
   });
 
   // replace(subject, search, replacement, culture?)
@@ -302,38 +308,31 @@ export function registerMCNHelpers(Handlebars) {
 
   // ── Comparison Functions ───────────────────
 
-  // and(...values) — block helper
+  // and(...values) — per MCN docs: inline only, returns boolean
   Handlebars.registerHelper('and', function(...args) {
-    const options = args.pop();
-    const result = args.every(isTruthy);
-    if (options.fn) return result ? options.fn(this) : (options.inverse ? options.inverse(this) : '');
-    return result;
+    const options = args.pop(); // Remove options hash if present
+    return args.every(isTruthy);
   });
 
   // compare(left, operator, right)
-  Handlebars.registerHelper('compare', function(left, operator, right, options) {
-    const result = compareValues(left, String(operator).trim(), right);
-    if (options && options.fn) return result ? options.fn(this) : (options.inverse ? options.inverse(this) : '');
-    return result;
+  // compare(left, operator, right) — per MCN docs: inline only, returns boolean
+  Handlebars.registerHelper('compare', function(left, operator, right) {
+    return compareValues(left, String(operator).trim(), right);
   });
 
-  // equals(v1, v2, compareAs?)
-  Handlebars.registerHelper('equals', function(v1, v2, compareAs, options) {
+  // equals(v1, v2, compareAs?) — per MCN docs: inline only, returns boolean
+  Handlebars.registerHelper('equals', function(v1, v2, compareAs) {
     if (v1 === null || v1 === undefined) return (v2 === null || v2 === undefined);
     if (v2 === null || v2 === undefined) return false;
 
     const cas = (compareAs && typeof compareAs !== 'object') ? String(compareAs).toLowerCase() : 'string';
-    let result;
     if (cas === 'number') {
-      result = Number(v1) === Number(v2);
+      return Number(v1) === Number(v2);
     } else if (cas === 'date' || cas === 'datetime') {
-      result = Date.parse(toStr(v1)) === Date.parse(toStr(v2));
+      return Date.parse(toStr(v1)) === Date.parse(toStr(v2));
     } else {
-      result = toStr(v1) === toStr(v2);
+      return toStr(v1) === toStr(v2);
     }
-    const opts = (typeof compareAs === 'object') ? compareAs : options;
-    if (opts && opts.fn) return result ? opts.fn(this) : (opts.inverse ? opts.inverse(this) : '');
-    return result;
   });
 
   // if — override built-in to support {{else if}} (Handlebars.js already does this natively)
@@ -344,34 +343,26 @@ export function registerMCNHelpers(Handlebars) {
     return isTruthy(expression) ? leftResult : rightResult;
   });
 
-  // isEmpty(value)  ⚠️ Not in official docs (404), implemented from category description
-  Handlebars.registerHelper('isEmpty', function(value, options) {
-    const result = value === null || value === undefined || value === '' ||
+  // isempty(input) — per MCN docs: inline only, returns boolean
+  Handlebars.registerHelper('isempty', function(value) {
+    return value === null || value === undefined || value === '' ||
       (Array.isArray(value) && value.length === 0);
-    if (options && options.fn) return result ? options.fn(this) : (options.inverse ? options.inverse(this) : '');
-    return result;
   });
 
-  // isNull(value)  ⚠️ Not in official docs (404), implemented from category description
-  Handlebars.registerHelper('isNull', function(value, options) {
-    const result = value === null || value === undefined;
-    if (options && options.fn) return result ? options.fn(this) : (options.inverse ? options.inverse(this) : '');
-    return result;
+  // isnull(expression) — per MCN docs: inline only, returns boolean
+  Handlebars.registerHelper('isnull', function(value) {
+    return value === null || value === undefined;
   });
 
-  // not(value) — can be used inline or as block helper
-  Handlebars.registerHelper('not', function(value, options) {
-    const result = !isTruthy(value);
-    if (options && options.fn) return result ? options.fn(this) : (options.inverse ? options.inverse(this) : '');
-    return result;
+  // not(value) — per MCN docs: inline only, returns boolean
+  Handlebars.registerHelper('not', function(value) {
+    return !isTruthy(value);
   });
 
-  // or(...values) — block helper
+  // or(...values) — per MCN docs: inline only, returns boolean
   Handlebars.registerHelper('or', function(...args) {
-    const options = args.pop();
-    const result = args.some(isTruthy);
-    if (options.fn) return result ? options.fn(this) : (options.inverse ? options.inverse(this) : '');
-    return result;
+    const options = args.pop(); // Remove options hash if present
+    return args.some(isTruthy);
   });
 
   // ── Utility Functions ──────────────────────
@@ -404,12 +395,26 @@ export function registerMCNHelpers(Handlebars) {
     return toStr(subject);
   });
 
-  // formatCurrency(value, currency?, culture?)  ⚠️ Not in official docs (404), using Intl.NumberFormat
-  Handlebars.registerHelper('formatCurrency', function(value, currency, culture, options) {
+  // formatCurrency(number, cultureCode) — per MCN docs: format as currency using culture code
+  // The currency symbol is derived from the culture code (e.g. en-US → USD, en-GB → GBP)
+  Handlebars.registerHelper('formatCurrency', function(value, cultureCode, options) {
     const n = Number(value);
     if (isNaN(n)) return toStr(value);
-    const curr = (currency && typeof currency !== 'object') ? String(currency) : 'USD';
-    const cult = (culture && typeof culture !== 'object') ? String(culture).replace('_', '-') : 'en-US';
+    const cult = (cultureCode && typeof cultureCode !== 'object') ? String(cultureCode).replace('_', '-') : 'en-US';
+    // Derive currency from culture code (best-effort lookup; defaults to USD)
+    const currencyFromCulture = {
+      'en-US':'USD','en-CA':'CAD','en-GB':'GBP','en-AU':'AUD','en-NZ':'NZD',
+      'en-IN':'INR','en-SG':'SGD','en-ZA':'ZAR','en-HK':'HKD',
+      'fr-FR':'EUR','de-DE':'EUR','es-ES':'EUR','it-IT':'EUR','pt-PT':'EUR',
+      'nl-NL':'EUR','fi-FI':'EUR','el-GR':'EUR','sk-SK':'EUR','sl-SI':'EUR',
+      'fr-BE':'EUR','de-AT':'EUR','de-LU':'EUR','es-IE':'EUR','hr-HR':'EUR',
+      'ja-JP':'JPY','zh-CN':'CNY','zh-TW':'TWD','zh-HK':'HKD',
+      'ko-KR':'KRW','pt-BR':'BRL','ru-RU':'RUB','ar-SA':'SAR',
+      'tr-TR':'TRY','pl-PL':'PLN','sv-SE':'SEK','da-DK':'DKK','nb-NO':'NOK',
+      'cs-CZ':'CZK','hu-HU':'HUF','ro-RO':'RON','bg-BG':'BGN',
+      'fr-CH':'CHF','de-CH':'CHF','it-CH':'CHF',
+    };
+    const curr = currencyFromCulture[cult] || 'USD';
     try {
       return new Intl.NumberFormat(cult, { style: 'currency', currency: curr }).format(n);
     } catch (_) {
@@ -526,13 +531,13 @@ export function registerMCNHelpers(Handlebars) {
     return r2(v1 % v2);
   });
 
-  // Random(first, second) → random integer in [first, second] (inclusive)
+  // random(first, second) → random integer in [first, second] (inclusive)
   // ⚠️ Uses Math.random(); MCN uses server-side RNG so values will differ
-  Handlebars.registerHelper('Random', function(first, second) {
+  Handlebars.registerHelper('random', function(first, second) {
     const min = Number(first), max = Number(second);
-    if (isNaN(min)) throw new Error('Random: first cannot be converted to a number');
-    if (isNaN(max)) throw new Error('Random: second cannot be converted to a number');
-    if (max < min) throw new Error('Random: second must be >= first');
+    if (isNaN(min)) throw new Error('random: first cannot be converted to a number');
+    if (isNaN(max)) throw new Error('random: second cannot be converted to a number');
+    if (max < min) throw new Error('random: second must be >= first');
     const lo = Math.ceil(min), hi = Math.floor(max);
     return Math.floor(Math.random() * (hi - lo + 1)) + lo;
   });
